@@ -110,63 +110,37 @@
             opacity: 1;
         }
 
-        /* Анимация пульсации для привлечения внимания к кнопке света */
-        @keyframes pulse-attention {
-            0% {
-                transform: scale(1);
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            }
-
-            50% {
-                transform: scale(1.08);
-                box-shadow: 0 4px 18px rgba(255, 170, 0, 0.45);
-            }
-
-            100% {
-                transform: scale(1);
-                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            }
-        }
-
-        /* Увеличенная кнопка света на карточке */
         .light-btn-badge {
             position: absolute;
-            top: 14px;
-            right: 14px;
+            top: 12px;
+            right: 12px;
             z-index: 5;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1.5px solid rgba(255, 180, 0, 0.4);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
             border-radius: 30px;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             color: #111;
             cursor: pointer;
-            animation: pulse-attention 2.4s infinite ease-in-out;
-            transition: background 0.2s ease, border-color 0.2s ease;
-        }
-
-        .light-btn-badge:hover {
-            animation-play-state: paused;
-            transform: scale(1.1);
         }
 
         .light-btn-badge .indicator {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #bbb;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
+            transition: background 0.3s ease;
         }
 
         .light-btn-badge.is-on .indicator {
             background: #ffaa00;
-            box-shadow: 0 0 10px #ffaa00;
+            box-shadow: 0 0 8px #ffaa00;
         }
 
         .card-footer {
@@ -196,7 +170,7 @@
             transform: translateX(3px);
         }
 
-        /* --- Viewer с увеличенной навигацией --- */
+        /* --- Viewer --- */
         .viewer {
             position: fixed;
             inset: 0;
@@ -219,157 +193,93 @@
             position: absolute;
             top: 0;
             inset-inline: 0;
-            height: 76px;
+            height: 64px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 24px;
+            padding: 0 20px;
             z-index: 100;
         }
 
         .viewer-counter {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 16px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
         }
 
         .viewer-controls {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 10px;
         }
 
-        /* Увеличенная кнопка света внутри Viewer */
-        .viewer-btn-light {
-            background: rgba(255, 255, 255, 0.16);
-            border: 1.5px solid rgba(255, 180, 0, 0.6);
+        .viewer-btn {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
-            padding: 10px 20px;
-            border-radius: 30px;
+            padding: 7px 14px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 13px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(12px);
-            animation: pulse-attention 2.4s infinite ease-in-out;
-            transition: background 0.25s ease;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+            transition: var(--transition);
         }
 
-        .viewer-btn-light:hover {
-            animation-play-state: paused;
-            transform: scale(1.08);
-            background: rgba(255, 255, 255, 0.25);
+        .viewer-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
         }
 
-        /* Увеличенный блок Zoom + / - */
+        /* Zoom controls (+ / -) */
         .zoom-group {
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.14);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 30px;
-            padding: 3px 8px;
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 2px 6px;
+            backdrop-filter: blur(10px);
         }
 
         .zoom-btn {
             background: none;
             border: none;
             color: #fff;
-            width: 36px;
-            height: 36px;
-            font-size: 22px;
-            font-weight: 500;
+            width: 28px;
+            height: 28px;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             border-radius: 50%;
-            transition: background 0.2s ease, transform 0.1s ease;
+            transition: background 0.2s ease;
         }
 
         .zoom-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .zoom-btn:active {
-            transform: scale(0.9);
+            background: rgba(255, 255, 255, 0.15);
         }
 
         .zoom-display {
             color: #fff;
-            font-size: 14px;
-            font-weight: 600;
-            padding: 0 10px;
-            min-width: 54px;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 0 6px;
+            min-width: 44px;
             text-align: center;
         }
 
-        /* Увеличенная кнопка закрытия */
         .viewer-close-btn {
-            width: 48px;
-            height: 48px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.14);
-            color: #fff;
-            display: flex;
-            align-items: center;
+            padding: 0;
             justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            backdrop-filter: blur(12px);
-            transition: var(--transition);
+            font-size: 18px;
         }
 
-        .viewer-close-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: scale(1.08);
-        }
-
-        /* Увеличенные боковые стрелки на десктопе */
-        .viewer-arrow {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            color: #fff;
-            font-size: 32px;
-            cursor: pointer;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-            transition: var(--transition);
-        }
-
-        .viewer-arrow:hover {
-            background: rgba(255, 255, 255, 0.28);
-            transform: translateY(-50%) scale(1.08);
-        }
-
-        @media (min-width: 768px) {
-            .viewer-arrow {
-                display: flex;
-            }
-        }
-
-        .viewer-arrow.prev {
-            left: 24px;
-        }
-
-        .viewer-arrow.next {
-            right: 24px;
-        }
-
-        /* Карусель */
+        /* Полноценный 3-слайдовый трек карусели */
         .viewer-stage {
             width: 100%;
             height: 100%;
@@ -401,7 +311,7 @@
         .viewer-image-wrap {
             position: relative;
             max-width: 90vw;
-            max-height: 80vh;
+            max-height: 82vh;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -411,7 +321,7 @@
 
         .viewer-slide-slot img {
             max-width: 90vw;
-            max-height: 80vh;
+            max-height: 82vh;
             object-fit: contain;
             border-radius: 8px;
             pointer-events: none;
@@ -432,6 +342,43 @@
 
         .viewer-slide-slot .light-img.active {
             opacity: 1;
+        }
+
+        .viewer-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            transition: var(--transition);
+        }
+
+        .viewer-arrow:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        @media (min-width: 768px) {
+            .viewer-arrow {
+                display: flex;
+            }
+        }
+
+        .viewer-arrow.prev {
+            left: 20px;
+        }
+
+        .viewer-arrow.next {
+            right: 20px;
         }
 
         @media (max-width: 600px) {
@@ -457,20 +404,10 @@
             }
 
             .light-btn-badge {
-                padding: 6px 12px;
-                font-size: 11px;
+                padding: 4px 8px;
+                font-size: 10px;
                 top: 8px;
                 right: 8px;
-            }
-
-            .viewer-header {
-                height: 68px;
-                padding: 0 14px;
-            }
-
-            .viewer-btn-light {
-                padding: 7px 14px;
-                font-size: 13px;
             }
 
             .viewer-slide-slot img {
@@ -492,29 +429,28 @@
         <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 
-    <!-- Viewer с увеличенной навигацией и пульсацией -->
+    <!-- Viewer с каруселью и +/- зумом -->
     <div class="viewer" id="viewer">
         <div class="viewer-header">
             <span class="viewer-counter" id="viewerCounter">1 / 13</span>
             <div class="viewer-controls">
-                <!-- Увеличенная пульсирующая кнопка света -->
-                <button class="viewer-btn-light" id="viewerLightToggle" style="display: none;">
+                <button class="viewer-btn" id="viewerLightToggle" style="display: none;">
                     💡 <span>Свет: Выкл</span>
                 </button>
 
-                <!-- Увеличенный Zoom -->
+                <!-- Кнопки зума - / + -->
                 <div class="zoom-group">
                     <button class="zoom-btn" id="zoomOutBtn" title="Уменьшить">−</button>
                     <span class="zoom-display" id="zoomDisplay">100%</span>
                     <button class="zoom-btn" id="zoomInBtn" title="Увеличить">+</button>
                 </div>
 
-                <button class="viewer-close-btn" id="viewerCloseBtn" title="Закрыть">✕</button>
+                <button class="viewer-btn viewer-close-btn" id="viewerCloseBtn">✕</button>
             </div>
         </div>
 
-        <button class="viewer-arrow prev" id="arrowPrev" title="Предыдущее">‹</button>
-        <button class="viewer-arrow next" id="arrowNext" title="Следующее">›</button>
+        <button class="viewer-arrow prev" id="arrowPrev">‹</button>
+        <button class="viewer-arrow next" id="arrowNext">›</button>
 
         <div class="viewer-stage" id="viewerStage">
             <div class="viewer-track" id="viewerTrack">
@@ -590,7 +526,7 @@
             grid.appendChild(card);
         });
 
-        /* --- Viewer Logic --- */
+        /* --- Viewer Logic (Continuous Carousel & Step Zoom) --- */
         const viewer = document.getElementById('viewer');
         const track = document.getElementById('viewerTrack');
         const slotPrev = document.getElementById('slotPrev');
@@ -707,11 +643,13 @@
             }
         });
 
+        // Двойной клик переключает 100% / 200%
         slotCurr.addEventListener('dblclick', () => {
             currentZoomIndex = (currentZoomIndex === 0) ? 2 : 0;
             applyZoom(true);
         });
 
+        // Колесико мыши
         viewer.addEventListener('wheel', (e) => {
             e.preventDefault();
             if (e.deltaY < 0 && currentZoomIndex < zoomLevels.length - 1) {
@@ -740,12 +678,14 @@
             const dy = e.clientY - startY;
 
             if (zoomLevels[currentZoomIndex] > 1) {
+                // В зуме панорамируем
                 panX += dx;
                 panY += dy;
                 startX = e.clientX;
                 startY = e.clientY;
                 applyZoom(false);
             } else {
+                // Тянем трек карусели
                 currentDragX = dx;
                 track.style.transition = 'none';
                 track.style.transform = `translateX(calc(-100vw + ${currentDragX}px))`;
@@ -764,6 +704,7 @@
                 } else if (currentDragX > threshold) {
                     slidePrev();
                 } else {
+                    // Возврат на место
                     track.style.transition = 'transform 0.25s ease-out';
                     track.style.transform = 'translateX(-100vw)';
                 }
