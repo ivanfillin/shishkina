@@ -214,7 +214,6 @@
             opacity: 1;
         }
 
-        /* Верхняя панель: Название, счетчик и крестик */
         .viewer-header {
             position: absolute;
             top: 0;
@@ -280,7 +279,6 @@
             background: rgba(255, 255, 255, 0.25);
         }
 
-        /* Нижний отцентрованный бар (всегда по центру снизу) */
         .viewer-bottom-controls {
             position: absolute;
             bottom: 28px;
@@ -326,6 +324,7 @@
             height: 44px;
             padding: 2px 6px;
             backdrop-filter: blur(14px);
+            transition: width 0.3s ease;
         }
 
         .zoom-btn {
@@ -341,11 +340,15 @@
             justify-content: center;
             cursor: pointer;
             border-radius: 50%;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, transform 0.1s ease;
         }
 
         .zoom-btn:hover {
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        .zoom-btn:active {
+            transform: scale(0.9);
         }
 
         .zoom-display {
@@ -357,7 +360,27 @@
             text-align: center;
         }
 
-        /* Стрелки */
+        /* Кнопка сброса к 100% */
+        .zoom-reset-btn {
+            display: none;
+            border-left: 1px solid rgba(255, 255, 255, 0.18);
+            margin-left: 4px;
+            padding-left: 4px;
+            color: #ffb833;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1;
+        }
+
+        .zoom-reset-btn.visible {
+            display: flex;
+        }
+
+        .zoom-reset-btn:hover {
+            color: #ffd073;
+            background: rgba(255, 184, 51, 0.15);
+        }
+
         .viewer-arrow {
             position: absolute;
             top: 50%;
@@ -395,7 +418,6 @@
             right: 24px;
         }
 
-        /* Трек и контейнер фото */
         .viewer-stage {
             width: 100%;
             height: 100%;
@@ -550,7 +572,6 @@
 
     <!-- Viewer -->
     <div class="viewer" id="viewer">
-        <!-- Верх: Название, счетчик и крестик -->
         <div class="viewer-header">
             <div class="viewer-meta">
                 <span class="viewer-category" id="viewerCategory">Образ</span>
@@ -570,7 +591,7 @@
             </div>
         </div>
 
-        <!-- Низ по центру: Свет и Увеличение -->
+        <!-- Низ по центру -->
         <div class="viewer-bottom-controls">
             <button class="viewer-btn-light" id="viewerLightToggle" style="display: none;">
                 💡 <span>Свет: Выкл</span>
@@ -580,6 +601,8 @@
                 <button class="zoom-btn" id="zoomOutBtn" title="Уменьшить">−</button>
                 <span class="zoom-display" id="zoomDisplay">100%</span>
                 <button class="zoom-btn" id="zoomInBtn" title="Увеличить">+</button>
+                <!-- Кнопка сброса зума (появляется при > 100%) -->
+                <button class="zoom-btn zoom-reset-btn" id="zoomResetBtn" title="Сбросить к 100%">↺</button>
             </div>
         </div>
     </div>
@@ -660,6 +683,7 @@
         const viewerLightToggle = document.getElementById('viewerLightToggle');
         const zoomInBtn = document.getElementById('zoomInBtn');
         const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const zoomResetBtn = document.getElementById('zoomResetBtn');
         const zoomDisplay = document.getElementById('zoomDisplay');
 
         const zoomLevels = [1, 1.5, 2, 2.5, 3];
@@ -737,6 +761,13 @@
             const scale = zoomLevels[currentZoomIndex];
             zoomDisplay.textContent = `${Math.round(scale * 100)}%`;
 
+            // Показываем кнопку сброса только если масштаб > 100%
+            if (currentZoomIndex > 0) {
+                zoomResetBtn.classList.add('visible');
+            } else {
+                zoomResetBtn.classList.remove('visible');
+            }
+
             currWrap.style.transition = animate ? 'transform 0.25s cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
             if (scale > 1) {
                 currWrap.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
@@ -749,7 +780,7 @@
         function resetZoom() {
             currentZoomIndex = 0;
             panX = 0; panY = 0;
-            applyZoom(false);
+            applyZoom(true);
         }
 
         zoomInBtn.addEventListener('click', (e) => {
@@ -766,6 +797,12 @@
                 currentZoomIndex--;
                 applyZoom(true);
             }
+        });
+
+        // Клик по кнопке сброса ↺
+        zoomResetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            resetZoom();
         });
 
         slotCurr.addEventListener('dblclick', () => {
