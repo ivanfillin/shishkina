@@ -110,28 +110,27 @@
             opacity: 1;
         }
 
-        /* Анимация мерцания света БЕЗ изменения размера */
         @keyframes light-flicker {
 
             0%,
             100% {
-                border-color: rgba(255, 180, 0, 0.3);
-                box-shadow: 0 0 4px rgba(255, 180, 0, 0.1);
+                border-color: rgba(255, 180, 0, 0.35);
+                box-shadow: 0 0 6px rgba(255, 180, 0, 0.15);
             }
 
             45% {
-                border-color: rgba(255, 200, 0, 0.8);
-                box-shadow: 0 0 14px rgba(255, 180, 0, 0.55), inset 0 0 6px rgba(255, 200, 0, 0.2);
+                border-color: rgba(255, 205, 0, 0.85);
+                box-shadow: 0 0 16px rgba(255, 180, 0, 0.55), inset 0 0 8px rgba(255, 200, 0, 0.2);
             }
 
             60% {
-                border-color: rgba(255, 170, 0, 0.4);
-                box-shadow: 0 0 6px rgba(255, 170, 0, 0.2);
+                border-color: rgba(255, 170, 0, 0.45);
+                box-shadow: 0 0 8px rgba(255, 170, 0, 0.25);
             }
 
             75% {
-                border-color: rgba(255, 210, 0, 0.9);
-                box-shadow: 0 0 18px rgba(255, 190, 0, 0.7), inset 0 0 8px rgba(255, 210, 0, 0.25);
+                border-color: rgba(255, 215, 0, 0.95);
+                box-shadow: 0 0 20px rgba(255, 190, 0, 0.7), inset 0 0 10px rgba(255, 210, 0, 0.3);
             }
         }
 
@@ -142,7 +141,6 @@
             z-index: 5;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1.5px solid rgba(255, 180, 0, 0.4);
             border-radius: 30px;
             padding: 8px 16px;
@@ -201,7 +199,7 @@
         .viewer {
             position: fixed;
             inset: 0;
-            background: rgba(12, 12, 13, 0.97);
+            background: rgba(10, 10, 11, 0.98);
             z-index: 9999;
             display: none;
             opacity: 0;
@@ -216,6 +214,7 @@
             opacity: 1;
         }
 
+        /* Верхняя панель: Название, счетчик и крестик */
         .viewer-header {
             position: absolute;
             top: 0;
@@ -226,35 +225,94 @@
             align-items: center;
             padding: 0 24px;
             z-index: 100;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, transparent 100%);
+        }
+
+        .viewer-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .viewer-category {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.12);
+            padding: 8px 16px;
+            border-radius: 30px;
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            max-width: 260px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .viewer-counter {
-            color: rgba(255, 255, 255, 0.85);
-            font-size: 16px;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 14px;
             font-weight: 500;
-            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 8px 14px;
+            border-radius: 30px;
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
 
-        .viewer-controls {
+        .viewer-close-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.14);
+            color: #fff;
             display: flex;
             align-items: center;
-            gap: 14px;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            backdrop-filter: blur(14px);
+            transition: var(--transition);
         }
 
-        /* Мерцающая кнопка в просмотрщике (без изменения размера) */
+        .viewer-close-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Нижний отцентрованный бар (всегда по центру снизу) */
+        .viewer-bottom-controls {
+            position: absolute;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(24, 24, 26, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 6px 10px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.55);
+        }
+
         .viewer-btn-light {
-            background: rgba(255, 255, 255, 0.16);
+            background: rgba(255, 255, 255, 0.14);
             border: 1.5px solid rgba(255, 180, 0, 0.5);
             color: #fff;
-            padding: 10px 20px;
+            height: 44px;
+            padding: 0 20px;
             border-radius: 30px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             animation: light-flicker 2.8s infinite ease-in-out;
             transition: background 0.25s ease;
         }
@@ -262,11 +320,12 @@
         .zoom-group {
             display: flex;
             align-items: center;
-            background: rgba(255, 255, 255, 0.14);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 30px;
-            padding: 3px 8px;
-            backdrop-filter: blur(12px);
+            height: 44px;
+            padding: 2px 6px;
+            backdrop-filter: blur(14px);
         }
 
         .zoom-btn {
@@ -291,33 +350,14 @@
 
         .zoom-display {
             color: #fff;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            padding: 0 10px;
-            min-width: 54px;
+            padding: 0 8px;
+            min-width: 48px;
             text-align: center;
         }
 
-        .viewer-close-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.14);
-            color: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            cursor: pointer;
-            backdrop-filter: blur(12px);
-            transition: var(--transition);
-        }
-
-        .viewer-close-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-        }
-
+        /* Стрелки */
         .viewer-arrow {
             position: absolute;
             top: 50%;
@@ -384,14 +424,13 @@
             overflow: hidden;
         }
 
-        /* Строгое совмещение картинок через CSS Grid overlay */
         .viewer-image-wrap {
             position: relative;
             display: inline-grid;
             grid-template-areas: "stack";
             place-items: center;
             max-width: 90vw;
-            max-height: 80vh;
+            max-height: 76vh;
             width: fit-content;
             height: fit-content;
             will-change: transform;
@@ -401,7 +440,7 @@
         .viewer-image-wrap img {
             grid-area: stack;
             max-width: 90vw;
-            max-height: 80vh;
+            max-height: 76vh;
             width: auto;
             height: auto;
             object-fit: contain;
@@ -453,18 +492,46 @@
 
             .viewer-header {
                 height: 68px;
-                padding: 0 14px;
+                padding: 0 16px;
+            }
+
+            .viewer-category {
+                font-size: 13px;
+                padding: 6px 12px;
+                max-width: 170px;
+            }
+
+            .viewer-counter {
+                font-size: 13px;
+                padding: 6px 10px;
+            }
+
+            .viewer-close-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 20px;
+            }
+
+            .viewer-bottom-controls {
+                bottom: 20px;
+                padding: 5px 8px;
+                gap: 8px;
             }
 
             .viewer-btn-light {
-                padding: 7px 14px;
+                height: 42px;
+                padding: 0 16px;
                 font-size: 13px;
+            }
+
+            .zoom-group {
+                height: 42px;
             }
 
             .viewer-image-wrap,
             .viewer-image-wrap img {
                 max-width: 96vw;
-                max-height: 75vh;
+                max-height: 70vh;
             }
         }
     </style>
@@ -481,22 +548,15 @@
         <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 
+    <!-- Viewer -->
     <div class="viewer" id="viewer">
+        <!-- Верх: Название, счетчик и крестик -->
         <div class="viewer-header">
-            <span class="viewer-counter" id="viewerCounter">1 / 13</span>
-            <div class="viewer-controls">
-                <button class="viewer-btn-light" id="viewerLightToggle" style="display: none;">
-                    💡 <span>Свет: Выкл</span>
-                </button>
-
-                <div class="zoom-group">
-                    <button class="zoom-btn" id="zoomOutBtn" title="Уменьшить">−</button>
-                    <span class="zoom-display" id="zoomDisplay">100%</span>
-                    <button class="zoom-btn" id="zoomInBtn" title="Увеличить">+</button>
-                </div>
-
-                <button class="viewer-close-btn" id="viewerCloseBtn" title="Закрыть">✕</button>
+            <div class="viewer-meta">
+                <span class="viewer-category" id="viewerCategory">Образ</span>
+                <span class="viewer-counter" id="viewerCounter">1 / 13</span>
             </div>
+            <button class="viewer-close-btn" id="viewerCloseBtn" title="Закрыть">✕</button>
         </div>
 
         <button class="viewer-arrow prev" id="arrowPrev" title="Предыдущее">‹</button>
@@ -507,6 +567,19 @@
                 <div class="viewer-slide-slot" id="slotPrev"></div>
                 <div class="viewer-slide-slot" id="slotCurr"></div>
                 <div class="viewer-slide-slot" id="slotNext"></div>
+            </div>
+        </div>
+
+        <!-- Низ по центру: Свет и Увеличение -->
+        <div class="viewer-bottom-controls">
+            <button class="viewer-btn-light" id="viewerLightToggle" style="display: none;">
+                💡 <span>Свет: Выкл</span>
+            </button>
+
+            <div class="zoom-group">
+                <button class="zoom-btn" id="zoomOutBtn" title="Уменьшить">−</button>
+                <span class="zoom-display" id="zoomDisplay">100%</span>
+                <button class="zoom-btn" id="zoomInBtn" title="Увеличить">+</button>
             </div>
         </div>
     </div>
@@ -582,6 +655,7 @@
         const slotPrev = document.getElementById('slotPrev');
         const slotCurr = document.getElementById('slotCurr');
         const slotNext = document.getElementById('slotNext');
+        const viewerCategory = document.getElementById('viewerCategory');
         const viewerCounter = document.getElementById('viewerCounter');
         const viewerLightToggle = document.getElementById('viewerLightToggle');
         const zoomInBtn = document.getElementById('zoomInBtn');
@@ -622,9 +696,10 @@
             slotCurr.innerHTML = createSlideHTML(items[currentIndex]);
             slotNext.innerHTML = createSlideHTML(items[nextIdx]);
 
+            const currentItem = items[currentIndex];
+            viewerCategory.textContent = currentItem.title;
             viewerCounter.textContent = `${currentIndex + 1} / ${total}`;
 
-            const currentItem = items[currentIndex];
             if (currentItem.type === 'light-switch') {
                 viewerLightToggle.style.display = 'flex';
                 updateLightState(isLightOn);
@@ -709,7 +784,7 @@
             }
         }, { passive: false });
 
-        /* Карусель и свайп "из-под пальца" */
+        /* Карусель и свайп */
         const stage = document.getElementById('viewerStage');
 
         stage.addEventListener('pointerdown', (e) => {
