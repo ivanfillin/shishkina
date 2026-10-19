@@ -170,6 +170,7 @@
             transform: translateX(3px);
         }
 
+        /* --- Viewer --- */
         .viewer {
             position: fixed;
             inset: 0;
@@ -223,6 +224,50 @@
             align-items: center;
             gap: 6px;
             backdrop-filter: blur(10px);
+            transition: var(--transition);
+        }
+
+        .viewer-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* Zoom controls (+ / -) */
+        .zoom-group {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 2px 6px;
+            backdrop-filter: blur(10px);
+        }
+
+        .zoom-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            width: 28px;
+            height: 28px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: background 0.2s ease;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .zoom-display {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 0 6px;
+            min-width: 44px;
+            text-align: center;
         }
 
         .viewer-close-btn {
@@ -234,15 +279,36 @@
             font-size: 18px;
         }
 
+        /* Полноценный 3-слайдовый трек карусели */
         .viewer-stage {
             width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .viewer-track {
+            display: flex;
+            width: 300vw;
+            height: 100%;
+            transform: translateX(-100vw);
+            will-change: transform;
+        }
+
+        .viewer-slide-slot {
+            width: 100vw;
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
         }
 
-        .viewer-image-container {
+        .viewer-image-wrap {
             position: relative;
             max-width: 90vw;
             max-height: 82vh;
@@ -251,18 +317,18 @@
             justify-content: center;
             transform-origin: center center;
             will-change: transform;
-            cursor: grab;
         }
 
-        .viewer-img {
+        .viewer-slide-slot img {
             max-width: 90vw;
             max-height: 82vh;
             object-fit: contain;
             border-radius: 8px;
             pointer-events: none;
+            user-select: none;
         }
 
-        .viewer-light-img {
+        .viewer-slide-slot .light-img {
             position: absolute;
             inset: 0;
             width: 100%;
@@ -274,7 +340,7 @@
             transition: opacity 0.4s ease;
         }
 
-        .viewer-light-img.active {
+        .viewer-slide-slot .light-img.active {
             opacity: 1;
         }
 
@@ -294,6 +360,11 @@
             align-items: center;
             justify-content: center;
             z-index: 50;
+            transition: var(--transition);
+        }
+
+        .viewer-arrow:hover {
+            background: rgba(255, 255, 255, 0.25);
         }
 
         @media (min-width: 768px) {
@@ -339,9 +410,7 @@
                 right: 8px;
             }
 
-            .viewer-image-container,
-            .viewer-img,
-            .viewer-light-img {
+            .viewer-slide-slot img {
                 max-width: 96vw;
                 max-height: 75vh;
             }
@@ -360,6 +429,7 @@
         <div class="gallery-grid" id="galleryGrid"></div>
     </div>
 
+    <!-- Viewer с каруселью и +/- зумом -->
     <div class="viewer" id="viewer">
         <div class="viewer-header">
             <span class="viewer-counter" id="viewerCounter">1 / 13</span>
@@ -367,7 +437,14 @@
                 <button class="viewer-btn" id="viewerLightToggle" style="display: none;">
                     💡 <span>Свет: Выкл</span>
                 </button>
-                <button class="viewer-btn" id="viewerZoomBtn">🔍 <span>100%</span></button>
+
+                <!-- Кнопки зума - / + -->
+                <div class="zoom-group">
+                    <button class="zoom-btn" id="zoomOutBtn" title="Уменьшить">−</button>
+                    <span class="zoom-display" id="zoomDisplay">100%</span>
+                    <button class="zoom-btn" id="zoomInBtn" title="Увеличить">+</button>
+                </div>
+
                 <button class="viewer-btn viewer-close-btn" id="viewerCloseBtn">✕</button>
             </div>
         </div>
@@ -376,28 +453,24 @@
         <button class="viewer-arrow next" id="arrowNext">›</button>
 
         <div class="viewer-stage" id="viewerStage">
-            <div class="viewer-image-container" id="viewerContainer">
-                <img class="viewer-img" id="viewerBaseImg" src="" alt="Photo">
-                <img class="viewer-light-img" id="viewerLightImg" src="" alt="Photo Light On">
+            <div class="viewer-track" id="viewerTrack">
+                <div class="viewer-slide-slot" id="slotPrev"></div>
+                <div class="viewer-slide-slot" id="slotCurr"></div>
+                <div class="viewer-slide-slot" id="slotNext"></div>
             </div>
         </div>
     </div>
 
     <script>
         const items = [
-            // 1. Модельная съёмка со светом
             { type: 'light-switch', title: 'Модель — Образ I', off: 'img/shishkina_model_1_off.jpg', on: 'img/shishkina_model_1_on.jpg' },
             { type: 'light-switch', title: 'Модель — Образ II', off: 'img/shishkina_model_2_off.jpg', on: 'img/shishkina_model_2_on.jpg' },
-
-            // 2. Предметная съёмка
             { type: 'single', title: 'Предметная сцена I', src: 'img/shishkina_background (1).jpg' },
             { type: 'single', title: 'Предметная сцена II', src: 'img/shishkina_background (2).jpg' },
             { type: 'single', title: 'Предметная сцена III', src: 'img/shishkina_background (3).jpg' },
             { type: 'single', title: 'Предметная сцена IV', src: 'img/shishkina_background (4).jpg' },
             { type: 'single', title: 'Предметная сцена V', src: 'img/shishkina_background (5).jpg' },
             { type: 'single', title: 'Предметная сцена VI', src: 'img/shishkina_background (6).jpg' },
-
-            // 3. Креативные концепции
             { type: 'single', title: 'Концепция — Рука I', src: 'img/shishkina_hand.jpg' },
             { type: 'single', title: 'Концепция — Рука II', src: 'img/shishkina_hand_2.jpg' },
             { type: 'single', title: 'Концепция — Белка I', src: 'img/shishkina_belka (1).jpg' },
@@ -453,63 +526,230 @@
             grid.appendChild(card);
         });
 
+        /* --- Viewer Logic (Continuous Carousel & Step Zoom) --- */
         const viewer = document.getElementById('viewer');
-        const viewerContainer = document.getElementById('viewerContainer');
-        const viewerBaseImg = document.getElementById('viewerBaseImg');
-        const viewerLightImg = document.getElementById('viewerLightImg');
+        const track = document.getElementById('viewerTrack');
+        const slotPrev = document.getElementById('slotPrev');
+        const slotCurr = document.getElementById('slotCurr');
+        const slotNext = document.getElementById('slotNext');
         const viewerCounter = document.getElementById('viewerCounter');
         const viewerLightToggle = document.getElementById('viewerLightToggle');
-        const viewerZoomBtn = document.getElementById('viewerZoomBtn');
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const zoomDisplay = document.getElementById('zoomDisplay');
 
-        let zoomScale = 1;
+        const zoomLevels = [1, 1.5, 2, 2.5, 3];
+        let currentZoomIndex = 0;
         let panX = 0, panY = 0;
+
         let isDragging = false;
         let startX = 0, startY = 0;
-        let currentTranslateX = 0;
+        let currentDragX = 0;
+        let isAnimating = false;
 
-        function updateTransform(animate = false) {
-            viewerContainer.style.transition = animate ? 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
-            if (zoomScale > 1) {
-                viewerContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomScale})`;
-            } else {
-                viewerContainer.style.transform = `translate(${currentTranslateX}px, 0px) scale(1)`;
+        function createSlideHTML(item) {
+            if (item.type === 'light-switch') {
+                return `
+                    <div class="viewer-image-wrap">
+                        <img src="${item.off}" alt="${item.title}">
+                        <img src="${item.on}" class="light-img ${isLightOn ? 'active' : ''}" alt="${item.title} On">
+                    </div>
+                `;
             }
+            return `
+                <div class="viewer-image-wrap">
+                    <img src="${item.src}" alt="${item.title}">
+                </div>
+            `;
         }
 
-        function renderSlide() {
-            const current = items[currentIndex];
-            viewerCounter.textContent = `${currentIndex + 1} / ${items.length}`;
-            resetZoom();
+        function renderSlides() {
+            const total = items.length;
+            const prevIdx = (currentIndex - 1 + total) % total;
+            const nextIdx = (currentIndex + 1) % total;
 
-            if (current.type === 'light-switch') {
-                viewerBaseImg.src = current.off;
-                viewerLightImg.src = current.on;
-                viewerLightImg.style.display = 'block';
+            slotPrev.innerHTML = createSlideHTML(items[prevIdx]);
+            slotCurr.innerHTML = createSlideHTML(items[currentIndex]);
+            slotNext.innerHTML = createSlideHTML(items[nextIdx]);
+
+            viewerCounter.textContent = `${currentIndex + 1} / ${total}`;
+
+            const currentItem = items[currentIndex];
+            if (currentItem.type === 'light-switch') {
                 viewerLightToggle.style.display = 'flex';
-                setViewerLight(false);
+                updateLightState(isLightOn);
             } else {
-                viewerBaseImg.src = current.src;
-                viewerLightImg.style.display = 'none';
                 viewerLightToggle.style.display = 'none';
             }
+
+            resetZoom();
+            resetTrackPosition();
         }
 
-        function setViewerLight(on) {
+        function resetTrackPosition() {
+            track.style.transition = 'none';
+            track.style.transform = 'translateX(-100vw)';
+            currentDragX = 0;
+        }
+
+        function updateLightState(on) {
             isLightOn = on;
-            viewerLightImg.classList.toggle('active', isLightOn);
+            const currLight = slotCurr.querySelector('.light-img');
+            if (currLight) currLight.classList.toggle('active', isLightOn);
             viewerLightToggle.querySelector('span').textContent = isLightOn ? 'Свет: Вкл' : 'Свет: Выкл';
         }
 
         viewerLightToggle.addEventListener('click', (e) => {
             e.stopPropagation();
-            setViewerLight(!isLightOn);
+            updateLightState(!isLightOn);
         });
+
+        /* Zoom управление */
+        function applyZoom(animate = true) {
+            const currWrap = slotCurr.querySelector('.viewer-image-wrap');
+            if (!currWrap) return;
+
+            const scale = zoomLevels[currentZoomIndex];
+            zoomDisplay.textContent = `${Math.round(scale * 100)}%`;
+
+            currWrap.style.transition = animate ? 'transform 0.25s cubic-bezier(0.25, 1, 0.5, 1)' : 'none';
+            if (scale > 1) {
+                currWrap.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+            } else {
+                panX = 0; panY = 0;
+                currWrap.style.transform = 'none';
+            }
+        }
+
+        function resetZoom() {
+            currentZoomIndex = 0;
+            panX = 0; panY = 0;
+            applyZoom(false);
+        }
+
+        zoomInBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentZoomIndex < zoomLevels.length - 1) {
+                currentZoomIndex++;
+                applyZoom(true);
+            }
+        });
+
+        zoomOutBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (currentZoomIndex > 0) {
+                currentZoomIndex--;
+                applyZoom(true);
+            }
+        });
+
+        // Двойной клик переключает 100% / 200%
+        slotCurr.addEventListener('dblclick', () => {
+            currentZoomIndex = (currentZoomIndex === 0) ? 2 : 0;
+            applyZoom(true);
+        });
+
+        // Колесико мыши
+        viewer.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            if (e.deltaY < 0 && currentZoomIndex < zoomLevels.length - 1) {
+                currentZoomIndex++;
+                applyZoom(true);
+            } else if (e.deltaY > 0 && currentZoomIndex > 0) {
+                currentZoomIndex--;
+                applyZoom(true);
+            }
+        }, { passive: false });
+
+        /* Слайдер и свайп "из-под пальца" */
+        const stage = document.getElementById('viewerStage');
+
+        stage.addEventListener('pointerdown', (e) => {
+            if (isAnimating) return;
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            stage.setPointerCapture(e.pointerId);
+        });
+
+        stage.addEventListener('pointermove', (e) => {
+            if (!isDragging || isAnimating) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+
+            if (zoomLevels[currentZoomIndex] > 1) {
+                // В зуме панорамируем
+                panX += dx;
+                panY += dy;
+                startX = e.clientX;
+                startY = e.clientY;
+                applyZoom(false);
+            } else {
+                // Тянем трек карусели
+                currentDragX = dx;
+                track.style.transition = 'none';
+                track.style.transform = `translateX(calc(-100vw + ${currentDragX}px))`;
+            }
+        });
+
+        stage.addEventListener('pointerup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+
+            if (zoomLevels[currentZoomIndex] === 1) {
+                const threshold = window.innerWidth * 0.16;
+
+                if (currentDragX < -threshold) {
+                    slideNext();
+                } else if (currentDragX > threshold) {
+                    slidePrev();
+                } else {
+                    // Возврат на место
+                    track.style.transition = 'transform 0.25s ease-out';
+                    track.style.transform = 'translateX(-100vw)';
+                }
+            }
+        });
+
+        stage.addEventListener('pointercancel', () => {
+            isDragging = false;
+            resetTrackPosition();
+        });
+
+        function slideNext() {
+            if (isAnimating) return;
+            isAnimating = true;
+            track.style.transition = 'transform 0.28s cubic-bezier(0.25, 1, 0.5, 1)';
+            track.style.transform = 'translateX(-200vw)';
+
+            setTimeout(() => {
+                currentIndex = (currentIndex + 1) % items.length;
+                renderSlides();
+                isAnimating = false;
+            }, 280);
+        }
+
+        function slidePrev() {
+            if (isAnimating) return;
+            isAnimating = true;
+            track.style.transition = 'transform 0.28s cubic-bezier(0.25, 1, 0.5, 1)';
+            track.style.transform = 'translateX(0vw)';
+
+            setTimeout(() => {
+                currentIndex = (currentIndex - 1 + items.length) % items.length;
+                renderSlides();
+                isAnimating = false;
+            }, 280);
+        }
+
+        document.getElementById('arrowNext').addEventListener('click', (e) => { e.stopPropagation(); slideNext(); });
+        document.getElementById('arrowPrev').addEventListener('click', (e) => { e.stopPropagation(); slidePrev(); });
 
         function openViewer(index) {
             currentIndex = index;
             viewer.classList.add('open');
             document.body.style.overflow = 'hidden';
-            renderSlide();
+            renderSlides();
         }
 
         function closeViewer() {
@@ -520,105 +760,11 @@
 
         document.getElementById('viewerCloseBtn').addEventListener('click', closeViewer);
 
-        function nextSlide() {
-            currentIndex = (currentIndex < items.length - 1) ? currentIndex + 1 : 0;
-            renderSlide();
-        }
-
-        function prevSlide() {
-            currentIndex = (currentIndex > 0) ? currentIndex - 1 : items.length - 1;
-            renderSlide();
-        }
-
-        document.getElementById('arrowNext').addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
-        document.getElementById('arrowPrev').addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
-
-        function toggleZoom() {
-            if (zoomScale > 1) {
-                resetZoom();
-            } else {
-                zoomScale = 2.4;
-                viewerZoomBtn.querySelector('span').textContent = '240%';
-                updateTransform(true);
-            }
-        }
-
-        function resetZoom() {
-            zoomScale = 1;
-            panX = 0; panY = 0; currentTranslateX = 0;
-            viewerZoomBtn.querySelector('span').textContent = '100%';
-            updateTransform(true);
-        }
-
-        viewerZoomBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleZoom(); });
-        viewerContainer.addEventListener('dblclick', toggleZoom);
-
-        viewer.addEventListener('wheel', (e) => {
-            e.preventDefault();
-            zoomScale = Math.min(Math.max(1, zoomScale + e.deltaY * -0.005), 4);
-            viewerZoomBtn.querySelector('span').textContent = `${Math.round(zoomScale * 100)}%`;
-            if (zoomScale === 1) { panX = 0; panY = 0; }
-            updateTransform(false);
-        }, { passive: false });
-
-        const stage = document.getElementById('viewerStage');
-
-        stage.addEventListener('pointerdown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            stage.setPointerCapture(e.pointerId);
-        });
-
-        stage.addEventListener('pointermove', (e) => {
-            if (!isDragging) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-
-            if (zoomScale > 1) {
-                panX += dx;
-                panY += dy;
-                startX = e.clientX;
-                startY = e.clientY;
-                updateTransform(false);
-            } else {
-                currentTranslateX = dx;
-                updateTransform(false);
-            }
-        });
-
-        stage.addEventListener('pointerup', () => {
-            if (!isDragging) return;
-            isDragging = false;
-
-            if (zoomScale === 1) {
-                const threshold = window.innerWidth * 0.18;
-                if (currentTranslateX < -threshold) {
-                    currentTranslateX = -window.innerWidth;
-                    updateTransform(true);
-                    setTimeout(() => { currentTranslateX = 0; nextSlide(); }, 180);
-                } else if (currentTranslateX > threshold) {
-                    currentTranslateX = window.innerWidth;
-                    updateTransform(true);
-                    setTimeout(() => { currentTranslateX = 0; prevSlide(); }, 180);
-                } else {
-                    currentTranslateX = 0;
-                    updateTransform(true);
-                }
-            }
-        });
-
-        stage.addEventListener('pointercancel', () => {
-            isDragging = false;
-            currentTranslateX = 0;
-            updateTransform(true);
-        });
-
         document.addEventListener('keydown', (e) => {
             if (!viewer.classList.contains('open')) return;
             if (e.key === 'Escape') closeViewer();
-            if (e.key === 'ArrowRight') nextSlide();
-            if (e.key === 'ArrowLeft') prevSlide();
+            if (e.key === 'ArrowRight') slideNext();
+            if (e.key === 'ArrowLeft') slidePrev();
         });
     </script>
 </body>
